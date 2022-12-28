@@ -14,6 +14,10 @@ import androidx.navigation.fragment.findNavController
 import com.yoon.quest.MainData.DataModel
 import com.yoon.quest.MainData.DataModelViewModel
 import com.yoon.quest.databinding.FragmentAddEditBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class FragmentAdd : BaseFragment<FragmentAddEditBinding>() {
@@ -78,7 +82,9 @@ class FragmentAdd : BaseFragment<FragmentAddEditBinding>() {
                 return@setOnClickListener
             }
             val dataModel = DataModel( mBinding.title.text.toString(), mBinding.contentEdit.text.toString(), mSelectedColor)
-            mModel.insert(dataModel)
+            CoroutineScope(Dispatchers.Main).launch{
+                mModel.insert(dataModel)
+            }
             findNavController().popBackStack(R.id.fragMain,false)
         }
 
@@ -93,16 +99,12 @@ class FragmentAdd : BaseFragment<FragmentAddEditBinding>() {
         mBinding.colorBtn8.setOnCheckedChangeListener(mColorClickListener)
     }
 
-    private val mColorClickListener: CompoundButton.OnCheckedChangeListener = object : CompoundButton.OnCheckedChangeListener {
-            var avoidRecursions = false
+    private val mColorClickListener: CompoundButton.OnCheckedChangeListener =
+        object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-                if (avoidRecursions) return
-                avoidRecursions = true
-
                 // don't allow the un-checking
                 if (!isChecked) {
                     buttonView.isChecked = true
-                    avoidRecursions = false
                     return
                 }
 
@@ -116,7 +118,6 @@ class FragmentAdd : BaseFragment<FragmentAddEditBinding>() {
                     false else if (buttonView !== mBinding.colorBtn7 && mBinding.colorBtn7.isChecked) mBinding.colorBtn7.isChecked =
                     false else if (buttonView !== mBinding.colorBtn8 && mBinding.colorBtn8.isChecked) mBinding.colorBtn8.isChecked =
                     false
-                avoidRecursions = false
                 mSelectedColor = setBlockColor(buttonView)
                 Timber.tag("checkCheck").d("선택한 색갈 : %s", mSelectedColor)
             }

@@ -7,11 +7,18 @@ import androidx.lifecycle.ViewModel
 
 class DataModelViewModel(application: Application) : ViewModel() {
     private val repository = Repository(application)
-    private lateinit var items :LiveData<List<DataModel>>
+//    private val items: MutableLiveData<List<DataModel>>
+//        get() = repository.getDataList()
+    private val items: LiveData<List<DataModel>>
+        get() = repository.getDataList()
 
-    fun getData(): LiveData<List<DataModel>> {
-        return repository.getDataList()
-    }
+//    fun getData(): MutableLiveData<List<DataModel>> {
+//        return items
+//    }
+//    fun getData(): LiveData<List<DataModel>> {
+//        return repository.getDataList()
+//    }
+    fun getData(): LiveData<List<DataModel>> = items
 
     fun insert(data: DataModel) {
         repository.insert(data)
@@ -21,7 +28,7 @@ class DataModelViewModel(application: Application) : ViewModel() {
         repository.delete(data)
     }
 
-    fun update(id: Int,data: DataModel){
+    fun update(id: Int, data: DataModel) {
         repository.update(id, data)
     }
 
@@ -29,7 +36,11 @@ class DataModelViewModel(application: Application) : ViewModel() {
         return repository.getIdData(id)
     }
 
-    fun showAllData(){
+    fun showData(){
+//        items.postValue(repository.getDataList().value)
+    }
+
+    fun showAllData() {
         repository.getAll()
     }
 

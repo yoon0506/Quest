@@ -2,11 +2,13 @@ package com.yoon.quest
 
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.CompoundButton
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.yoon.quest.MainData.DataModel
 import com.yoon.quest.MainData.DataModelViewModel
 import com.yoon.quest.databinding.FragmentMainBinding
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.everything.android.ui.overscroll.IOverScrollDecor
@@ -39,13 +42,14 @@ class FragmentMain : BaseFragment<FragmentMainBinding>() {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
 
-        mModel.showAllData()
-        mModel.getData().observe(viewLifecycleOwner, {
-            if(it != null) {
+        mModel.getData().observe(viewLifecycleOwner) {
+            if (!it.isNullOrEmpty()) {
+                Log.e("checkCheck","ㅇㅇㅇㅇ 데이터 사이즈 : ${it.size}")
                 mAdapter.setList(ArrayList(it))
-            }
-        })
-
+            } else
+                Log.e("checkCheck","ㅇㅇㅇㅇ list is null")
+        }
+        mModel.showAllData()
         // 아래로 끌어당겨 데이터 추가
         var decor = VerticalOverScrollBounceEffectDecorator(
             RecyclerViewOverScrollDecorAdapter(
@@ -94,8 +98,7 @@ class FragmentMain : BaseFragment<FragmentMainBinding>() {
         mBinding.recycler.layoutManager = LinearLayoutManager(requireContext())
         mAdapter = ListAdapter(requireContext(), object : ListAdapter.Listener {
             override fun eventRemoveItem(dataModel: DataModel) {
-                lifecycleScope.launch(Dispatchers.IO)
-                {
+                CoroutineScope(Dispatchers.Main).launch {
                     mModel.delete(dataModel)
                 }
             }
@@ -111,18 +114,12 @@ class FragmentMain : BaseFragment<FragmentMainBinding>() {
     private fun clickFoldBtn() {
         mBinding.foldButton.visibility = View.GONE
         mBinding.foldView.visibility = View.VISIBLE
-        val mmSlideUp: Animation = AnimationUtils.loadAnimation(
-            context,
-            R.anim.slide_up
-        )
+        val mmSlideUp: Animation = AnimationUtils.loadAnimation(context, R.anim.slide_up)
         mBinding.foldView.startAnimation(mmSlideUp)
     }
 
     private fun clickUnFoldBtn() {
-        val mmSlideDown: Animation = AnimationUtils.loadAnimation(
-            context,
-            R.anim.slide_down
-        )
+        val mmSlideDown: Animation = AnimationUtils.loadAnimation(context, R.anim.slide_down)
         mBinding.foldView.startAnimation(mmSlideDown)
         mBinding.foldView.visibility = View.GONE
         val delayHandler = Handler()
@@ -146,8 +143,10 @@ class FragmentMain : BaseFragment<FragmentMainBinding>() {
             for (color in mSelectedColorList) {
                 Timber.tag("checkCheck").d("선택한 색갈 리스트 : %s", color)
                 try {
-                    mModel.showDataByColor(color)
-                    mAdapter.setList(ArrayList(mModel.getData().value))
+                    CoroutineScope(Dispatchers.Main).launch {
+                        mModel.showDataByColor(color)
+                    }
+//                    mAdapter.setList(ArrayList(data.value))
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

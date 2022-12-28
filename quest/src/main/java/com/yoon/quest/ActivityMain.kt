@@ -26,7 +26,6 @@ class ActivityMain : AppCompatActivity() {
             // 툴바
             mBinding.apply {
                 setContentView(root)
-                initNavigation()
                 supportActionBar!!.hide()
                 val navHostFragment = supportFragmentManager.findFragmentById(R.id.navi) as NavHostFragment
                 val navController = navHostFragment.navController
@@ -70,10 +69,5 @@ class ActivityMain : AppCompatActivity() {
         mmIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         mmIntent.putExtra(Key.EVENT_APP_EXIT, true)
         startActivity(mmIntent)
-    }
-
-    private fun initNavigation() {
-        val navController = findNavController(R.id.navi)
-        NavigationUI.setupWithNavController(mBinding.navigation, navController)
     }
 }

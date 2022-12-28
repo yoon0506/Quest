@@ -2,6 +2,7 @@ package com.yoon.quest
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,9 @@ class ListAdapter(private val mContext: Context, private val listener: Listener)
 
     public fun setList(data: ArrayList<DataModel>) {
         items.clear()
+        for(item in data) {
+            Log.e("checkCheck", "ㅇㅇㅇㅇ 데이터 내용 : ${item.title}")
+        }
         items.addAll(data)
         notifyDataSetChanged()
     }

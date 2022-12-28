@@ -7,7 +7,6 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +33,7 @@ public interface DataModelDAO {
     DataModel getIdData(int mId);
 
     /**
-     * id로 데이터 찾기
+     * color로 데이터 찾기
      */
     @Query("SELECT * FROM DataModel WHERE color = :mColor")
     DataModel getDataIncludeColor(String mColor);
@@ -49,7 +48,7 @@ public interface DataModelDAO {
     /**
      * Insert annotation -> 내용추가
      **/
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(DataModel dataModel);
 
     /**

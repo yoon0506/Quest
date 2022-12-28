@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 
 
-abstract class BaseFragment<VB : ViewBinding>() : Fragment() {
+abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     private var _binding: VB? = null
     val mBinding get() = _binding!!
 
